@@ -1,0 +1,54 @@
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: blog_development
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - "db_data:/var/lib/mysql"
+    ports:
+      - "3306:3306"
+    networks:
+      - blog_network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - blog_network
+
+  sidekiq:
+    build: .
+    command: bundle exec sidekiq
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: mysql2://root@db:3306/blog_development
+      REDIS_URL: redis://redis:6379/0
+    networks:
+      - blog_network
+
+  web:
+    build: .
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:create && bundle exec rails active_storage:install && bundle exec rails db:migrate && bundle exec rails s -b '0.0.0.0' -p 3000"
+    depends_on:
+      - db
+      - redis
+    environment:
+      DATABASE_URL: mysql2://root@db:3306/blog_development
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    networks:
+      - blog_network
+volumes:
+  db_data:
+networks:
+  blog_network:
+    driver: bridge

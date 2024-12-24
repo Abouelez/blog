@@ -19,8 +19,6 @@ docker-compose up --build
 ### 2. Authentication Methods
 - The `authenticate_user` method is implemented in `ApplicationController` to ensure authentication for requests.
 - A method to retrieve the current authenticated user, accessible using `current_user` in the controllers.
-
-### 3. Usage
 - Use the `before_action :authenticate_user` in any controller to ensure that all actions require authentication.
 - Access the currently authenticated user using `current_user` within the controllers.
 

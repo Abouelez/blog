@@ -118,7 +118,7 @@ GEM
       reline (>= 0.4.2)
     json (2.9.1)
     jsonapi-renderer (0.2.2)
-    jwt (2.9.3)
+    jwt (2.10.1)
       base64
     kamal (2.4.0)
       activesupport (>= 7.0)
